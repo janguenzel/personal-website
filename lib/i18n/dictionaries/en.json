@@ -1,0 +1,261 @@
+{
+  "meta": {
+    "home": {
+      "title": "whoami",
+      "description": "Developer, tinkerer and terminal enthusiast. The personal site of Jan Günzel — rendered as a real terminal."
+    },
+    "about": {
+      "title": "about",
+      "description": "Who I am, how and why I started coding, the languages I use and how I got here."
+    },
+    "projects": {
+      "title": "projects",
+      "description": "Things I've built — open source, side projects and experiments."
+    },
+    "board": {
+      "title": "board",
+      "description": "A GitHub-authenticated guestbook. Sign in, leave a message, watch the unique-visitor counter tick."
+    },
+    "imprint": {
+      "title": "imprint",
+      "description": "Legal disclosure / Impressum."
+    },
+    "privacy": {
+      "title": "privacy",
+      "description": "How this site handles your data."
+    }
+  },
+  "nav": {
+    "ariaLabel": "Terminal tabs",
+    "home": "~",
+    "about": "about",
+    "projects": "projects",
+    "board": "board",
+    "imprint": "imprint",
+    "privacy": "privacy"
+  },
+  "shell": {
+    "windowTitle": "{user}@{host}: {path}",
+    "themeToggle": "Toggle light / dark",
+    "schemeCycle": "Cycle colour scheme",
+    "langToggle": "Switch language",
+    "openPalette": "Open command palette",
+    "help": "Keyboard shortcuts",
+    "minimize": "minimize",
+    "maximize": "maximize",
+    "close": "close"
+  },
+  "palette": {
+    "placeholder": "Type a page or command…",
+    "empty": "No matches.",
+    "pages": "Pages",
+    "actions": "Actions",
+    "toggleTheme": "Toggle light / dark",
+    "cycleScheme": "Cycle colour scheme",
+    "switchLang": "Switch to {lang}",
+    "matrix": "Enter the matrix"
+  },
+  "help": {
+    "title": "Keyboard shortcuts",
+    "palette": "Command palette",
+    "nextTab": "Next tab",
+    "prevTab": "Previous tab",
+    "jumpTab": "Jump to tab 1–9",
+    "toggleTheme": "Toggle light / dark",
+    "cycleScheme": "Cycle colour scheme",
+    "help": "This help",
+    "close": "Close overlay"
+  },
+  "boot": {
+    "lines": [
+      "booting PortfolioOS…",
+      "loading kernel modules… [ ok ]",
+      "mounting /home/visitor… [ ok ]",
+      "starting window manager… [ ok ]",
+      "establishing connection to jan-guenzel.de… [ ok ]",
+      "welcome — type `help` or press ? for shortcuts"
+    ],
+    "skip": "press any key to skip"
+  },
+  "fastfetch": {
+    "labels": {
+      "user": "user",
+      "os": "os",
+      "host": "host",
+      "role": "role",
+      "uptime": "uptime",
+      "shell": "shell",
+      "editor": "editor",
+      "languages": "languages",
+      "stack": "stack",
+      "location": "location",
+      "email": "email",
+      "github": "github"
+    },
+    "uptime": "{years} years coding",
+    "hint": "Tip: press ? for shortcuts · ⌘/Ctrl+K for the command palette."
+  },
+  "home": {
+    "greeting": "Hi, I'm {name}.",
+    "intro": "I build things. Lots of things, actually. I love trying new technologies and turning random ideas into projects. Most side projects never get shipped, but they usually teach me something along the way. Welcome to my personal page — have a look around. 🚀",
+    "ctaAbout": "about me",
+    "ctaProjects": "see my work",
+    "ctaBoard": "sign my board",
+    "promptHint": "try: cd projects · cd board · help"
+  },
+  "about": {
+    "heading": "~/about",
+    "command": "cat about.md",
+    "intro": {
+      "title": "whoami"
+    },
+    "origin": {
+      "title": "how it started"
+    },
+    "timeline": {
+      "title": "git log --oneline"
+    },
+    "skills": {
+      "title": "languages --by-usage"
+    },
+    "now": {
+      "title": "uptime"
+    },
+    "skillSince": "since {year}",
+    "outro": "thanks for reading — say hi on the board."
+  },
+  "projects": {
+    "heading": "~/projects",
+    "command": "ls -la ~/projects",
+    "featured": "featured",
+    "repo": "repo",
+    "live": "live",
+    "stack": "stack",
+    "empty": "No projects yet — check back soon.",
+    "privateNote": "Most of what I build is private or commercial work under NDA, so it can't be listed here. The above is just the publishable slice — happy to talk about the rest."
+  },
+  "board": {
+    "heading": "~/board",
+    "subtitle": "A little guestbook. Sign in with GitHub and say hi.",
+    "messagesCount": "{count} messages",
+    "usersCount": "{count} contributors",
+    "signInPrompt": "Sign in with GitHub to leave a message.",
+    "signIn": "gh auth login --provider github",
+    "loginToSend": "Write your message — you'll sign in with GitHub the moment you hit send.",
+    "signInAndSend": "sign in & send",
+    "draftRestored": "Draft restored — hit send to post it.",
+    "signedInAs": "signed in as @{login}",
+    "signOut": "logout",
+    "placeholder": "echo \"your message\" >> board",
+    "send": "send",
+    "sending": "sending…",
+    "edit": "edit",
+    "delete": "delete",
+    "save": "save",
+    "saving": "saving…",
+    "cancel": "cancel",
+    "edited": "edited",
+    "you": "you",
+    "confirmDelete": "Delete this message?",
+    "cooldown": "You can post again in {time}.",
+    "empty": "No messages yet. Be the first to sign the board.",
+    "charCount": "{count}/{max}",
+    "authDisabled": "GitHub login isn't configured on this deployment.",
+    "postedAt": "{time}",
+    "errors": {
+      "empty": "Message can't be empty.",
+      "tooLong": "Message is too long (max {max} characters).",
+      "unauthorized": "You need to sign in first.",
+      "rateLimited": "Slow down — you can post again in {time}.",
+      "notFound": "That message couldn't be found.",
+      "failed": "Couldn't send your message. Please try again."
+    }
+  },
+  "imprint": {
+    "heading": "~/imprint",
+    "command": "cat imprint.txt",
+    "legalNote": "Information pursuant to § 5 DDG (Digitale-Dienste-Gesetz).",
+    "labels": {
+      "name": "name",
+      "address": "address",
+      "country": "country",
+      "email": "email",
+      "phone": "phone",
+      "vat": "VAT ID"
+    },
+    "vatNote": "VAT identification number pursuant to § 27a UStG:",
+    "responsibleTitle": "Responsible for content pursuant to § 18 (2) MStV",
+    "disputeTitle": "Consumer dispute resolution",
+    "disputeBody": "We are neither willing nor obliged to take part in dispute resolution proceedings before a consumer arbitration board (§ 36 VSBG). The EU's online dispute resolution platform was discontinued on 20 July 2025.",
+    "liabilityContentTitle": "Liability for content",
+    "liabilityContentBody": "As a service provider we are responsible for our own content on these pages under the general laws, pursuant to § 7 (1) DDG. Under §§ 8 to 10 DDG, however, we are not obliged to monitor transmitted or stored third-party information or to investigate circumstances that indicate unlawful activity. Obligations to remove or block the use of information under the general laws remain unaffected. Liability in this regard is only possible from the point in time at which we become aware of a specific infringement. Upon becoming aware of such infringements, we will remove the content concerned without delay.",
+    "liabilityLinksTitle": "Liability for links",
+    "liabilityLinksBody": "Our site contains links to external third-party websites over whose content we have no influence. We therefore cannot accept any liability for this third-party content. The respective provider or operator of the linked pages is always responsible for their content. The linked pages were checked for possible legal violations at the time of linking; unlawful content was not recognisable at that time. Permanent monitoring of the content of the linked pages is not reasonable without concrete indications of an infringement. Upon becoming aware of legal violations, we will remove such links without delay.",
+    "copyrightTitle": "Copyright",
+    "copyrightBody": "The content and works created by the site operator on these pages are subject to German copyright law. Reproduction, processing, distribution and any kind of exploitation outside the limits of copyright require the written consent of the respective author or creator. Downloads and copies of this site are permitted only for private, non-commercial use. Insofar as the content on this site was not created by the operator, the copyrights of third parties are respected. Should you nevertheless become aware of a copyright infringement, please let us know; upon becoming aware of infringements we will remove such content without delay.",
+    "notConfigured": "Imprint details aren't configured on this deployment. Set the IMPRINT_* environment variables (see .env.example)."
+  },
+  "privacy": {
+    "heading": "~/privacy",
+    "command": "cat privacy.txt",
+    "updated": "As of June 2026.",
+    "intro": "This privacy policy explains which personal data we process when you visit this website, for what purposes and on what legal basis, and what rights you have. We keep data collection to the minimum needed to run the site.",
+    "controllerTitle": "Controller",
+    "controllerIntro": "The controller responsible for the processing of personal data on this website within the meaning of the GDPR is:",
+    "controllerEmailLabel": "Email",
+    "controllerNote": "You can find the full contact details in the imprint.",
+    "hostingTitle": "Hosting and server log files",
+    "hostingBody": "This website is hosted by Vercel Inc. (340 S Lemon Ave #4133, Walnut, CA 91789, USA). When you access the site, your browser automatically transmits data that Vercel stores in server log files: your IP address, the date and time of the request, the page requested, the referrer URL, and your browser and operating system. This processing is necessary to deliver the website reliably and securely and to defend against attacks. The legal basis is our legitimate interest in a secure and functional website (Art. 6 (1)(f) GDPR). Vercel processes this data on our behalf as a processor (Art. 28 GDPR); processing may take place in the USA (see “Data transfers to third countries”).",
+    "cookiesTitle": "Cookies and local storage",
+    "cookiesBody": "We do not use tracking or advertising cookies. We only store data on your device that is technically necessary for functions you request: your theme, colour scheme and language preference (in localStorage and a cookie sent back to the site), a cookie that records you have already been counted by the visitor counter so you aren't counted twice, and — only if you sign in — a signed, httpOnly session cookie. None of these contain tracking identifiers. Storing strictly necessary information is permitted under § 25 (2) TDDDG; the associated processing rests on our legitimate interest in providing the requested functions (Art. 6 (1)(f) GDPR).",
+    "authTitle": "Sign-in via GitHub (OAuth)",
+    "authBody": "You can sign in to the message board with your GitHub account; this is entirely optional. When you do, we ask GitHub only for your public profile (scope read:user) and store a signed, httpOnly session cookie — no password and no email address. The processing happens at your request to enable sign-in; the legal basis is your consent, given by starting the sign-in (Art. 6 (1)(a) GDPR). You can withdraw it at any time by logging out, which deletes the cookie. The login is operated via GitHub, Inc. (88 Colin P. Kelly Jr. St, San Francisco, CA 94107, USA).",
+    "boardTitle": "Message board",
+    "boardBody": "If you post a message on the board, we store your public GitHub username, display name, avatar URL, GitHub user id, the message text and the time of posting. This data is shown publicly on the board and is used to display contributions and count distinct contributors. The legal basis is your consent through posting (Art. 6 (1)(a) GDPR). You can edit or delete your own messages at any time; deleting a message removes it from the board. Please do not post anything you would not put on a public page. Messages are stored in a Neon Postgres database (a service of Neon Inc.), provisioned through the Vercel platform.",
+    "transfersTitle": "Data transfers to third countries",
+    "transfersBody": "Our hosting provider Vercel and the sign-in provider GitHub (a Microsoft company) may process data on servers in the USA. Where this happens, the transfer is safeguarded either by the providers' certification under the EU-US Data Privacy Framework or by EU standard contractual clauses pursuant to Art. 46 (2)(c) GDPR. Avatar images shown on the board are loaded directly from GitHub's servers, which means your IP address is transmitted to GitHub when those images load.",
+    "retentionTitle": "Storage period",
+    "retentionBody": "Server log files are stored only for a short period for security purposes and are then deleted or anonymised. Board messages remain stored until you delete them or the board is taken offline. Preference and counter cookies expire after at most one year or when you clear your browser storage; the session cookie is deleted when you log out or when it expires.",
+    "sslTitle": "Encryption",
+    "sslBody": "This site uses TLS (HTTPS) encryption for all connections to protect the transmission of your data.",
+    "rightsTitle": "Your rights",
+    "rightsIntro": "Under the GDPR you have the following rights regarding your personal data:",
+    "rightsItems": [
+      "Access to the data we hold about you (Art. 15 GDPR)",
+      "Rectification of inaccurate data (Art. 16 GDPR)",
+      "Erasure of your data (Art. 17 GDPR)",
+      "Restriction of processing (Art. 18 GDPR)",
+      "Data portability (Art. 20 GDPR)",
+      "Withdrawal of consent at any time, with effect for the future (Art. 7 (3) GDPR)"
+    ],
+    "rightsObjection": "Right to object: where we process data on the basis of our legitimate interests (Art. 6 (1)(f) GDPR), you have the right to object to that processing on grounds relating to your particular situation (Art. 21 GDPR).",
+    "rightsComplaint": "You also have the right to lodge a complaint with a data protection supervisory authority if you believe the processing of your data infringes the GDPR. You may contact the authority responsible for your place of residence or the one responsible for the controller.",
+    "rightsContact": "To exercise your rights, contact us using the address in the imprint.",
+    "changesTitle": "Changes to this privacy policy",
+    "changesBody": "We may adjust this privacy policy so that it always reflects current legal requirements or changes to the site's functions. The version published here applies to your visit."
+  },
+  "footer": {
+    "source": "source",
+    "builtWith": "built with Next.js + Tailwind",
+    "visitors": "{count} visitors",
+    "visitorsLabel": "Unique visitors so far",
+    "rights": "© {year} {name}"
+  },
+  "common": {
+    "loading": "loading…",
+    "back": "back",
+    "close": "close",
+    "copied": "copied!"
+  },
+  "notFound": {
+    "error": "404 Page Not Found",
+    "choose": "choose a page where you want to go",
+    "hint": "use ↑/↓ to pick a destination, ↵ to go",
+    "targets": {
+      "home": "Home",
+      "about": "About Me",
+      "projects": "Projects",
+      "board": "Message Board"
+    }
+  }
+}

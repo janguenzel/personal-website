@@ -1,0 +1,244 @@
+@import "tailwindcss";
+
+/* ── Map semantic tokens to Tailwind utilities (bg-bg, text-fg, border-border…) ── */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-prompt: var(--prompt);
+  --color-danger: var(--danger);
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── Light / dark base palette (data-theme on <html>) ── */
+:root,
+[data-theme="dark"] {
+  --bg: #0a0e0f;
+  --surface: #11171a;
+  --surface-2: #161d21;
+  --fg: #d6e2dd;
+  --muted: #7f928c;
+  --border: #243033;
+  --selection: #1f3a2e;
+  --accent: #22c55e;
+  --accent-2: #14b8a6;
+  --prompt: var(--accent);
+  --danger: #f87171;
+}
+
+[data-theme="light"] {
+  --bg: #f6f8f7;
+  --surface: #ffffff;
+  --surface-2: #eef2f0;
+  --fg: #14201b;
+  --muted: #5b6b65;
+  --border: #d4ddd9;
+  --selection: #c8efd9;
+  --accent: #15803d;
+  --accent-2: #0f766e;
+  --prompt: var(--accent);
+  --danger: #dc2626;
+}
+
+/* ── Colour schemes (data-scheme on <html>) — accent flavour only ── */
+[data-scheme="green"] {
+  --accent: #22c55e;
+  --accent-2: #14b8a6;
+}
+[data-scheme="amber"] {
+  --accent: #f5b53d;
+  --accent-2: #fb923c;
+}
+[data-scheme="cyan"] {
+  --accent: #38bdf8;
+  --accent-2: #22d3ee;
+}
+[data-scheme="magenta"] {
+  --accent: #e879f9;
+  --accent-2: #c084fc;
+}
+
+/* Darker accents on light backgrounds to keep WCAG AA contrast. */
+[data-theme="light"][data-scheme="green"] {
+  --accent: #15803d;
+  --accent-2: #0f766e;
+}
+[data-theme="light"][data-scheme="amber"] {
+  --accent: #b45309;
+  --accent-2: #c2410c;
+}
+[data-theme="light"][data-scheme="cyan"] {
+  --accent: #0369a1;
+  --accent-2: #0e7490;
+}
+[data-theme="light"][data-scheme="magenta"] {
+  --accent: #a21caf;
+  --accent-2: #7e22ce;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  color-scheme: dark;
+}
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--selection);
+  color: var(--fg);
+}
+
+/* Visible, token-based focus ring for keyboard users. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+a {
+  color: inherit;
+}
+
+/* ── Animations (all disabled under reduced motion, see bottom) ── */
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.82;
+  }
+  94% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0.9;
+  }
+}
+@keyframes glitch {
+  0%,
+  100% {
+    transform: translate(0);
+    clip-path: inset(0 0 0 0);
+  }
+  20% {
+    transform: translate(-1px, 1px);
+  }
+  40% {
+    transform: translate(1px, -1px);
+  }
+  60% {
+    transform: translate(-1px, 0);
+  }
+  80% {
+    transform: translate(1px, 0);
+  }
+}
+
+.cursor-blink {
+  animation: blink 1.1s step-end infinite;
+}
+
+/* CRT scanline overlay — purely decorative, sits above content, ignores pointer. */
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.06) 3px,
+    transparent 4px
+  );
+  mix-blend-mode: multiply;
+  z-index: 50;
+}
+
+.glitch:hover {
+  animation: glitch 0.35s steps(2) 1;
+}
+
+/* Staggered reveal for the about page (only applied when motion is allowed —
+   the component gates it on useReducedMotion so no content hides behind a
+   delay for users who opted out). */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.reveal {
+  animation: reveal 0.45s ease-out both;
+}
+
+/* Terminal-style proficiency bar filling from the left. */
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.bar-grow {
+  transform-origin: left;
+  animation: grow-x 0.7s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .cursor-blink {
+    opacity: 1;
+    animation: none;
+  }
+}
