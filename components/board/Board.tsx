@@ -13,9 +13,6 @@ import {
 import type { SessionUser } from "@/lib/auth/session";
 import type { Locale } from "@/lib/i18n/config";
 
-// Where an unauthenticated draft is parked across the GitHub OAuth round-trip.
-const DRAFT_KEY = "board:draft";
-
 function formatDuration(ms: number): string {
   const total = Math.max(0, Math.ceil(ms / 1000));
   const m = Math.floor(total / 60);
@@ -49,7 +46,6 @@ export function Board({
     authError ? t("board.authError") : null,
   );
   const [sending, setSending] = useState(false);
-  const [draftRestored, setDraftRestored] = useState(false);
 
   // Cooldown: epoch-ms when the user may post again (null = free to post).
   // `now` ticks once a second only while a cooldown is active, to drive the
@@ -65,19 +61,12 @@ export function Board({
   const remaining = nextAllowedAt ? nextAllowedAt - now : 0;
   const onCooldown = remaining > 0;
 
-  // On mount: restore any draft saved before the login round-trip, and seed the
-  // cooldown from the user's most recent post. setState lives in a timeout (not
-  // the effect body) per the project's no-sync-setState-in-effects rule.
+  // On mount: seed the cooldown from the user's most recent post. setState lives
+  // in a timeout (not the effect body) per the project's
+  // no-sync-setState-in-effects rule.
   useEffect(() => {
     if (!user) return;
     const id = setTimeout(() => {
-      const draft =
-        typeof window !== "undefined" ? localStorage.getItem(DRAFT_KEY) : null;
-      if (draft) {
-        localStorage.removeItem(DRAFT_KEY);
-        setText(draft);
-        setDraftRestored(true);
-      }
       const mine = initialMessages.filter((m) => m.userId === user.id);
       if (mine.length > 0) {
         const latest = Math.max(
@@ -103,18 +92,18 @@ export function Board({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Signed out: the composer is locked and the button is a pure sign-in
+    // action — bounce through GitHub and come back to an unlocked board.
+    if (!user) {
+      window.location.href = `/api/auth/login?locale=${locale}`;
+      return;
+    }
+
     const value = text.trim();
     if (!value) return setError(t("board.errors.empty"));
     if (value.length > MAX_MESSAGE_LENGTH) {
       return setError(t("board.errors.tooLong", { max: MAX_MESSAGE_LENGTH }));
-    }
-
-    // Not signed in yet: stash the draft and send the user through GitHub. They
-    // come back to the board with the draft restored, ready to hit send.
-    if (!user) {
-      localStorage.setItem(DRAFT_KEY, value);
-      window.location.href = `/api/auth/login?locale=${locale}`;
-      return;
     }
 
     if (onCooldown) {
@@ -156,7 +145,6 @@ export function Board({
       setMessages((prev) => [data.message, ...prev]);
       setStats(data.stats);
       setText("");
-      setDraftRestored(false);
       setNextAllowedAt(Date.now() + POST_COOLDOWN_MS);
       setNow(Date.now());
     } catch {
@@ -267,7 +255,7 @@ export function Board({
                   </button>
                 </>
               ) : (
-                <span>{t("board.loginToSend")}</span>
+                <span>{t("board.signInPrompt")}</span>
               )}
             </div>
 
@@ -281,31 +269,29 @@ export function Board({
               maxLength={MAX_MESSAGE_LENGTH}
               rows={3}
               placeholder={t("board.placeholder")}
-              className="w-full resize-none bg-transparent text-fg outline-none placeholder:text-muted"
+              disabled={!user}
+              aria-disabled={!user}
+              className="w-full resize-none bg-transparent text-fg outline-none placeholder:text-muted disabled:cursor-not-allowed disabled:opacity-50"
             />
-
-            {draftRestored ? (
-              <p className="mt-1 text-xs text-accent">
-                {t("board.draftRestored")}
-              </p>
-            ) : null}
 
             <div className="mt-2 flex items-center justify-between gap-2">
               <span className="text-xs text-muted">
-                {user && onCooldown
-                  ? t("board.cooldown", { time: formatDuration(remaining) })
-                  : t("board.charCount", {
-                      count: text.length,
-                      max: MAX_MESSAGE_LENGTH,
-                    })}
+                {user
+                  ? onCooldown
+                    ? t("board.cooldown", { time: formatDuration(remaining) })
+                    : t("board.charCount", {
+                        count: text.length,
+                        max: MAX_MESSAGE_LENGTH,
+                      })
+                  : null}
               </span>
               <button
                 type="submit"
-                disabled={sending || (user ? onCooldown : false)}
+                disabled={user ? sending || onCooldown : false}
                 className="border border-accent px-3 py-1 text-accent transition-colors hover:bg-accent hover:text-bg disabled:opacity-50"
               >
                 {!user
-                  ? t("board.signInAndSend")
+                  ? t("board.signIn")
                   : sending
                     ? t("board.sending")
                     : t("board.send")}
