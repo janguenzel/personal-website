@@ -18,6 +18,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -44,7 +46,9 @@
     "@vitest/coverage-v8": "^4.1.9",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "eslint-config-prettier": "^10.1.8",
     "jsdom": "^29.1.1",
+    "prettier": "3.8.4",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.9"

@@ -1,0 +1,16 @@
+# Build output & generated artifacts
+.next/
+out/
+build/
+coverage/
+next-env.d.ts
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Local board data (file-backed dev store)
+.data/
+
+# Lockfile (npm owns its formatting)
+package-lock.json
