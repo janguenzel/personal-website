@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import type { NewMessage } from "@/lib/board/types";
+import type { BoardMessage, NewMessage } from "@/lib/board/types";
 
 // The file backend resolves its data path from process.cwd() at module load and
 // picks the Neon backend only when a Postgres connection string is set. We chdir
@@ -39,6 +39,35 @@ beforeEach(async () => {
   // Reset the board between tests.
   await fs.rm(path.join(tmp, ".data"), { recursive: true, force: true });
 });
+
+// Write a board.json fixture directly (newest-first) so pagination tests get
+// stable, distinct createdAt cursors without relying on insert timing.
+async function seed(messages: BoardMessage[]): Promise<void> {
+  const dir = path.join(tmp, ".data");
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(
+    path.join(dir, "board.json"),
+    JSON.stringify({ messages }, null, 2),
+    "utf8",
+  );
+}
+
+function fixture(
+  id: string,
+  createdAt: string,
+  over: Partial<BoardMessage> = {},
+): BoardMessage {
+  return {
+    id,
+    userId: 1,
+    login: "octocat",
+    name: null,
+    avatar: "https://example.com/a.png",
+    text: id,
+    createdAt,
+    ...over,
+  };
+}
 
 describe("board store (file backend)", () => {
   it("reports the file backend", () => {
@@ -105,5 +134,44 @@ describe("board store (file backend)", () => {
     const msg = await store.addMessage({ ...base, userId: 1 });
     expect(await store.lastPostAt(1)).toBe(msg.createdAt);
     expect(await store.lastPostAt(2)).toBeNull();
+  });
+
+  it("paginates newest-first with a createdAt cursor and reports hasMore", async () => {
+    await seed([
+      fixture("c", "2026-01-03T00:00:00.000Z"),
+      fixture("b", "2026-01-02T00:00:00.000Z"),
+      fixture("a", "2026-01-01T00:00:00.000Z"),
+    ]);
+
+    const first = await store.listMessagesPage(2);
+    expect(first.messages.map((m) => m.id)).toEqual(["c", "b"]);
+    expect(first.hasMore).toBe(true);
+
+    const cursor = first.messages[first.messages.length - 1].createdAt;
+    const second = await store.listMessagesPage(2, cursor);
+    expect(second.messages.map((m) => m.id)).toEqual(["a"]);
+    expect(second.hasMore).toBe(false);
+  });
+
+  it("returns hasMore=false when the page covers every message", async () => {
+    await seed([
+      fixture("b", "2026-01-02T00:00:00.000Z"),
+      fixture("a", "2026-01-01T00:00:00.000Z"),
+    ]);
+    const page = await store.listMessagesPage(5);
+    expect(page.messages.map((m) => m.id)).toEqual(["b", "a"]);
+    expect(page.hasMore).toBe(false);
+  });
+
+  it("listFirstPageWithStats caps the page but reports full stats", async () => {
+    await seed([
+      fixture("c", "2026-01-03T00:00:00.000Z", { userId: 2 }),
+      fixture("b", "2026-01-02T00:00:00.000Z", { userId: 1 }),
+      fixture("a", "2026-01-01T00:00:00.000Z", { userId: 1 }),
+    ]);
+    const { messages, stats, hasMore } = await store.listFirstPageWithStats(2);
+    expect(messages.map((m) => m.id)).toEqual(["c", "b"]);
+    expect(hasMore).toBe(true);
+    expect(stats).toEqual({ total: 3, uniqueUsers: 2 });
   });
 });

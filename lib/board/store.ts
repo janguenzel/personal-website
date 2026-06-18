@@ -6,6 +6,7 @@ import {
   type BoardMessage,
   type BoardStats,
   type NewMessage,
+  BOARD_PAGE_SIZE,
   MAX_MESSAGES,
 } from "./types";
 
@@ -23,6 +24,13 @@ import {
 
 interface Backend {
   list(limit: number): Promise<BoardMessage[]>;
+  /**
+   * One page of messages, newest-first. When `before` (an ISO createdAt cursor)
+   * is given, only messages older than it are returned — this is the
+   * infinite-scroll path. Cursor-based (not offset) so a post landing at the top
+   * mid-session never shifts the window and duplicates/skips an older message.
+   */
+  page(limit: number, before?: string): Promise<BoardMessage[]>;
   /**
    * Messages + stats in a single backend round-trip. The board page and the
    * board GET endpoint need both; fetching them together avoids a second file
@@ -78,6 +86,13 @@ async function writeAll(messages: BoardMessage[]): Promise<void> {
 const fileBackend: Backend = {
   async list(limit) {
     return (await readAll()).slice(0, limit);
+  },
+  async page(limit, before) {
+    // readAll() is already newest-first (insert prepends), so filtering then
+    // slicing keeps the newest of the remaining older messages.
+    const all = await readAll();
+    const older = before ? all.filter((m) => m.createdAt < before) : all;
+    return older.slice(0, limit);
   },
   async listWithStats(limit) {
     const all = await readAll();
@@ -205,6 +220,21 @@ const neonBackend: Backend = {
       return rows.map(rowToMessage);
     }, []);
   },
+  async page(limit, before) {
+    return readQuery(async (sql) => {
+      const rows = before
+        ? await sql`
+            SELECT * FROM board_messages
+             WHERE created_at < ${before}
+             ORDER BY created_at DESC LIMIT ${limit}
+          `
+        : await sql`
+            SELECT * FROM board_messages
+             ORDER BY created_at DESC LIMIT ${limit}
+          `;
+      return rows.map(rowToMessage);
+    }, []);
+  },
   async listWithStats(limit) {
     // One round-trip: fetch the rows and derive stats from them. With
     // `limit = MAX_MESSAGES` the rows are the whole table (inserts trim to
@@ -302,6 +332,28 @@ export async function listMessagesWithStats(
   limit = MAX_MESSAGES,
 ): Promise<{ messages: BoardMessage[]; stats: BoardStats }> {
   return backend().listWithStats(limit);
+}
+
+/**
+ * One infinite-scroll page, newest-first. `before` is the ISO createdAt of the
+ * oldest message the client already has (omit it for the first page). We fetch
+ * one extra row to tell the client whether older messages remain, then trim it.
+ */
+export async function listMessagesPage(
+  limit = BOARD_PAGE_SIZE,
+  before?: string,
+): Promise<{ messages: BoardMessage[]; hasMore: boolean }> {
+  const rows = await backend().page(limit + 1, before);
+  const hasMore = rows.length > limit;
+  return { messages: hasMore ? rows.slice(0, limit) : rows, hasMore };
+}
+
+/** First page + stats for the initial board load (server component / GET). */
+export async function listFirstPageWithStats(
+  limit = BOARD_PAGE_SIZE,
+): Promise<{ messages: BoardMessage[]; stats: BoardStats; hasMore: boolean }> {
+  const [page, stats] = await Promise.all([listMessagesPage(limit), getStats()]);
+  return { messages: page.messages, stats, hasMore: page.hasMore };
 }
 
 export async function addMessage(input: NewMessage): Promise<BoardMessage> {

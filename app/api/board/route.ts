@@ -4,13 +4,21 @@ import {
   addMessage,
   getStats,
   lastPostAt,
-  listMessagesWithStats,
+  listFirstPageWithStats,
+  listMessagesPage,
 } from "@/lib/board/store";
 import { MAX_MESSAGE_LENGTH, POST_COOLDOWN_MS } from "@/lib/board/types";
 
-export async function GET() {
-  const { messages, stats } = await listMessagesWithStats();
-  return NextResponse.json({ messages, stats });
+export async function GET(request: NextRequest) {
+  // `?before=<ISO>` requests the next (older) infinite-scroll page; without it
+  // we return the first page plus stats for an initial / refresh load.
+  const before = request.nextUrl.searchParams.get("before");
+  if (before) {
+    const { messages, hasMore } = await listMessagesPage(undefined, before);
+    return NextResponse.json({ messages, hasMore });
+  }
+  const { messages, stats, hasMore } = await listFirstPageWithStats();
+  return NextResponse.json({ messages, stats, hasMore });
 }
 
 export async function POST(request: NextRequest) {

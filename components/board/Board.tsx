@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/provider";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { Typewriter } from "@/components/ui/Typewriter";
@@ -30,6 +30,7 @@ export function Board({
   authError = false,
   initialMessages,
   initialStats,
+  initialHasMore = false,
 }: {
   locale: Locale;
   user: SessionUser | null;
@@ -37,6 +38,7 @@ export function Board({
   authError?: boolean;
   initialMessages: BoardMessage[];
   initialStats: BoardStats;
+  initialHasMore?: boolean;
 }) {
   const { t } = useI18n();
   const reduced = useReducedMotion();
@@ -64,6 +66,68 @@ export function Board({
 
   // Pending delete: id of the message awaiting confirmation (drives the modal).
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  // Infinite scroll: the newest page is server-rendered; older pages are fetched
+  // on demand when a sentinel below the list scrolls into view. Cursor = the
+  // createdAt of the oldest loaded message. Refs mirror the live values so the
+  // (stable) observer callback never reads a stale closure.
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const messagesRef = useRef(messages);
+  const hasMoreRef = useRef(initialHasMore);
+  const loadingMoreRef = useRef(false);
+  useEffect(() => {
+    messagesRef.current = messages;
+    hasMoreRef.current = hasMore;
+  });
+
+  const loadMore = useCallback(async () => {
+    if (loadingMoreRef.current || !hasMoreRef.current) return;
+    const current = messagesRef.current;
+    const cursor = current[current.length - 1]?.createdAt;
+    if (!cursor) return;
+    loadingMoreRef.current = true;
+    setLoadingMore(true);
+    try {
+      const res = await fetch(
+        `/api/board?before=${encodeURIComponent(cursor)}`,
+      );
+      if (!res.ok) return;
+      const data = (await res.json()) as {
+        messages: BoardMessage[];
+        hasMore: boolean;
+      };
+      setMessages((prev) => {
+        const seen = new Set(prev.map((m) => m.id));
+        const older = data.messages.filter((m) => !seen.has(m.id));
+        return [...prev, ...older];
+      });
+      hasMoreRef.current = data.hasMore;
+      setHasMore(data.hasMore);
+    } catch {
+      // Network hiccup: leave the sentinel in place so scrolling retries later.
+    } finally {
+      loadingMoreRef.current = false;
+      setLoadingMore(false);
+    }
+  }, []);
+
+  // Observe the sentinel; fetch the next page a little before it's on screen.
+  // Re-runs when `hasMore` flips so the observer attaches to the (un)mounted
+  // sentinel. The setState lives in the async IO callback, not the effect body.
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) void loadMore();
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore, hasMore]);
 
   const remaining = nextAllowedAt ? nextAllowedAt - now : 0;
   const onCooldown = remaining > 0;
@@ -454,6 +518,33 @@ export function Board({
           })}
         </ul>
       )}
+
+      {/* Infinite-scroll footer: an off-screen sentinel triggers the next page,
+          a small status echoes progress, and a final marker once we hit the
+          oldest message. */}
+      {hasMore ? (
+        <div
+          ref={sentinelRef}
+          aria-hidden
+          className="h-px w-full"
+        />
+      ) : null}
+      {loadingMore ? (
+        <p
+          role="status"
+          className="py-4 text-center text-xs text-muted"
+        >
+          <span className="text-accent" aria-hidden>
+            ${" "}
+          </span>
+          {t("board.loadingMore")}
+        </p>
+      ) : null}
+      {!hasMore && messages.length > 0 ? (
+        <p className="py-4 text-center text-xs text-muted">
+          {t("board.endReached")}
+        </p>
+      ) : null}
 
       <ConfirmDialog
         open={pendingDeleteId !== null}

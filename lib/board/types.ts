@@ -29,6 +29,9 @@ export type NewMessage = Pick<
 export const MAX_MESSAGE_LENGTH = 500;
 export const MAX_MESSAGES = 200;
 
+/** How many messages a single board page (initial load / infinite-scroll fetch) returns. */
+export const BOARD_PAGE_SIZE = 20;
+
 /**
  * Minimum gap between two new posts by the same signed-in user. Edits and
  * deletes of existing messages are exempt — only fresh posts are throttled.
