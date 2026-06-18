@@ -29,13 +29,16 @@ export async function generateMetadata({
 
 export default async function BoardPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ auth?: string }>;
 }) {
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
 
-  const [user, messages, stats] = await Promise.all([
+  const [{ auth }, user, messages, stats] = await Promise.all([
+    searchParams,
     getSession(),
     listMessages(),
     getStats(),
@@ -46,6 +49,7 @@ export default async function BoardPage({
       locale={locale}
       user={user}
       authConfigured={isGitHubAuthConfigured}
+      authError={auth === "error"}
       initialMessages={messages}
       initialStats={stats}
     />

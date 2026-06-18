@@ -32,14 +32,21 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(boardUrl);
   }
 
-  const token = await exchangeCodeForToken(code);
-  if (!token) return NextResponse.redirect(boardUrl);
+  // Any unexpected failure here (e.g. a missing AUTH_SECRET, a GitHub outage)
+  // must degrade to the board with an error flag rather than a raw 500.
+  try {
+    const token = await exchangeCodeForToken(code);
+    if (!token) return NextResponse.redirect(`${boardUrl}?auth=error`);
 
-  const user = await fetchGitHubUser(token);
-  if (!user) return NextResponse.redirect(boardUrl);
+    const user = await fetchGitHubUser(token);
+    if (!user) return NextResponse.redirect(`${boardUrl}?auth=error`);
 
-  const session = await createSessionToken(user);
-  store.set(SESSION_COOKIE, session, sessionCookieOptions);
+    const session = await createSessionToken(user);
+    store.set(SESSION_COOKIE, session, sessionCookieOptions);
 
-  return NextResponse.redirect(boardUrl);
+    return NextResponse.redirect(boardUrl);
+  } catch (err) {
+    console.error("[auth/callback] sign-in failed:", err);
+    return NextResponse.redirect(`${boardUrl}?auth=error`);
+  }
 }

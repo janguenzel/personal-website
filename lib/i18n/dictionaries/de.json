@@ -161,6 +161,7 @@
     "empty": "Noch keine Nachrichten. Sei der/die Erste.",
     "charCount": "{count}/{max}",
     "authDisabled": "GitHub-Login ist auf diesem Deployment nicht konfiguriert.",
+    "authError": "Anmeldung fehlgeschlagen. Bitte versuch es erneut.",
     "postedAt": "{time}",
     "errors": {
       "empty": "Die Nachricht darf nicht leer sein.",

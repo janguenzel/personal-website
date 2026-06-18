@@ -161,6 +161,7 @@
     "empty": "No messages yet. Be the first to sign the board.",
     "charCount": "{count}/{max}",
     "authDisabled": "GitHub login isn't configured on this deployment.",
+    "authError": "Sign-in failed. Please try again.",
     "postedAt": "{time}",
     "errors": {
       "empty": "Message can't be empty.",

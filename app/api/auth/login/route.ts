@@ -19,16 +19,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(boardUrl);
   }
 
-  const state = crypto.randomUUID();
-  const store = await cookies();
-  // Pack the return locale into the state cookie so the callback can use it.
-  store.set(OAUTH_STATE_COOKIE, `${state}:${locale}`, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 600,
-  });
+  // Never 500 the login entry point: fall back to the board on any failure.
+  try {
+    const state = crypto.randomUUID();
+    const store = await cookies();
+    // Pack the return locale into the state cookie so the callback can use it.
+    store.set(OAUTH_STATE_COOKIE, `${state}:${locale}`, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 600,
+    });
 
-  return NextResponse.redirect(getAuthorizeUrl(state));
+    return NextResponse.redirect(getAuthorizeUrl(state));
+  } catch (err) {
+    console.error("[auth/login] failed to start sign-in:", err);
+    return NextResponse.redirect(`${boardUrl}?auth=error`);
+  }
 }

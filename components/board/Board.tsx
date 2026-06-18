@@ -27,12 +27,14 @@ export function Board({
   locale,
   user,
   authConfigured,
+  authError = false,
   initialMessages,
   initialStats,
 }: {
   locale: Locale;
   user: SessionUser | null;
   authConfigured: boolean;
+  authError?: boolean;
   initialMessages: BoardMessage[];
   initialStats: BoardStats;
 }) {
@@ -41,7 +43,11 @@ export function Board({
   const [messages, setMessages] = useState(initialMessages);
   const [stats, setStats] = useState(initialStats);
   const [text, setText] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  // Seed the error line when we land back from a failed OAuth round-trip
+  // (/board?auth=error). Render-time init, so no sync setState in an effect.
+  const [error, setError] = useState<string | null>(
+    authError ? t("board.authError") : null,
+  );
   const [sending, setSending] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
 
