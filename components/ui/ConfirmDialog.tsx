@@ -63,7 +63,9 @@ export function ConfirmDialog({
       >
         <h2
           id="confirm-dialog-title"
-          className={destructive ? "text-sm text-danger" : "text-sm text-accent"}
+          className={
+            destructive ? "text-sm text-danger" : "text-sm text-accent"
+          }
         >
           {title}
         </h2>

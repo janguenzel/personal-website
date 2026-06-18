@@ -33,10 +33,7 @@ export function Fastfetch({
   return (
     <section className="text-sm">
       <div className="flex flex-col gap-6 sm:flex-row sm:gap-10">
-        <pre
-          aria-hidden
-          className="shrink-0 text-accent leading-tight glitch"
-        >
+        <pre aria-hidden className="shrink-0 text-accent leading-tight glitch">
           {ASCII.join("\n")}
         </pre>
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">

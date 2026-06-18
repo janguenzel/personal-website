@@ -60,7 +60,8 @@ export function StatusBar({ locale }: { locale: Locale }) {
 
   const other = otherLocale(locale);
   const segment =
-    allNav.find((n) => pathname === localePath(locale, n.segment))?.segment ?? "";
+    allNav.find((n) => pathname === localePath(locale, n.segment))?.segment ??
+    "";
   const year = new Date().getFullYear();
 
   return (

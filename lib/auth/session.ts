@@ -36,7 +36,11 @@ async function hmac(data: string, secret: string): Promise<string> {
     false,
     ["sign"],
   );
-  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(data));
+  const sig = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(data),
+  );
   return b64url(new Uint8Array(sig));
 }
 
@@ -49,7 +53,10 @@ function safeEqual(a: string, b: string): boolean {
 }
 
 export async function createSessionToken(user: SessionUser): Promise<string> {
-  const payload = { user, exp: Math.floor(Date.now() / 1000) + MAX_AGE_SECONDS };
+  const payload = {
+    user,
+    exp: Math.floor(Date.now() / 1000) + MAX_AGE_SECONDS,
+  };
   const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
   const sig = await hmac(body, getSecret());
   return `${body}.${sig}`;
@@ -64,11 +71,14 @@ export async function verifySessionToken(
   const expected = await hmac(body, getSecret());
   if (!safeEqual(sig, expected)) return null;
   try {
-    const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as {
+    const payload = JSON.parse(
+      Buffer.from(body, "base64url").toString("utf8"),
+    ) as {
       user: SessionUser;
       exp: number;
     };
-    if (!payload.exp || payload.exp < Math.floor(Date.now() / 1000)) return null;
+    if (!payload.exp || payload.exp < Math.floor(Date.now() / 1000))
+      return null;
     return payload.user;
   } catch {
     return null;

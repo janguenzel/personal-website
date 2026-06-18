@@ -59,24 +59,24 @@ enable the optional GitHub message board.
 
 Safe to expose to the browser. Powers SEO tags, the title bar, and the fastfetch landing.
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NEXT_PUBLIC_SITE_URL` | Canonical absolute URL, no trailing slash (SEO + OAuth redirects). | `http://localhost:3000` |
-| `NEXT_PUBLIC_SITE_NAME` | Display name in the title bar / metadata. | `Jan Henning Günzel` |
-| `NEXT_PUBLIC_SITE_HOST` | Shell-style host for the prompt (`user@host`). | `jan-guenzel` |
-| `NEXT_PUBLIC_SITE_USER` | Shell-style username for the prompt. | `visitor` |
-| `NEXT_PUBLIC_SITE_ROLE` | Your role, shown in fastfetch. | `Software Engineer` |
-| `NEXT_PUBLIC_SITE_LOCATION` | Your location, shown in fastfetch. | `Germany` |
-| `NEXT_PUBLIC_SITE_EMAIL` | Public contact address on the landing page. | `contact@jan-guenzel.de` |
-| `NEXT_PUBLIC_GITHUB_USER` | GitHub username (links + socials). | `janguenzel` |
-| `NEXT_PUBLIC_TWITTER_HANDLE` | Twitter/X handle (empty = hidden). | _empty_ |
-| `NEXT_PUBLIC_LINKEDIN_URL` | Full LinkedIn profile URL (empty = hidden). | _empty_ |
-| `NEXT_PUBLIC_SITE_DISTRO` | Fastfetch "OS" flavour text. | `PortfolioOS 1.0 (terminal edition)` |
-| `NEXT_PUBLIC_SITE_SHELL` | Fastfetch shell value. | `zsh` |
-| `NEXT_PUBLIC_SITE_EDITOR` | Fastfetch editor value. | `vscode, neovim` |
-| `NEXT_PUBLIC_SITE_LANGUAGES` | Comma-separated languages for fastfetch. | `TypeScript,Rust,Python` |
-| `NEXT_PUBLIC_SITE_STACK` | Comma-separated stack for fastfetch. | `Next.js,React,Node.js,Nest.js,PostgreSQL,Docker` |
-| `NEXT_PUBLIC_CODING_SINCE` | ISO date you started coding (drives the fastfetch "uptime"). | `2015-01-01` |
+| Variable                     | Description                                                        | Default                                           |
+| ---------------------------- | ------------------------------------------------------------------ | ------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`       | Canonical absolute URL, no trailing slash (SEO + OAuth redirects). | `http://localhost:3000`                           |
+| `NEXT_PUBLIC_SITE_NAME`      | Display name in the title bar / metadata.                          | `Jan Henning Günzel`                              |
+| `NEXT_PUBLIC_SITE_HOST`      | Shell-style host for the prompt (`user@host`).                     | `jan-guenzel`                                     |
+| `NEXT_PUBLIC_SITE_USER`      | Shell-style username for the prompt.                               | `visitor`                                         |
+| `NEXT_PUBLIC_SITE_ROLE`      | Your role, shown in fastfetch.                                     | `Software Engineer`                               |
+| `NEXT_PUBLIC_SITE_LOCATION`  | Your location, shown in fastfetch.                                 | `Germany`                                         |
+| `NEXT_PUBLIC_SITE_EMAIL`     | Public contact address on the landing page.                        | `contact@jan-guenzel.de`                          |
+| `NEXT_PUBLIC_GITHUB_USER`    | GitHub username (links + socials).                                 | `janguenzel`                                      |
+| `NEXT_PUBLIC_TWITTER_HANDLE` | Twitter/X handle (empty = hidden).                                 | _empty_                                           |
+| `NEXT_PUBLIC_LINKEDIN_URL`   | Full LinkedIn profile URL (empty = hidden).                        | _empty_                                           |
+| `NEXT_PUBLIC_SITE_DISTRO`    | Fastfetch "OS" flavour text.                                       | `PortfolioOS 1.0 (terminal edition)`              |
+| `NEXT_PUBLIC_SITE_SHELL`     | Fastfetch shell value.                                             | `zsh`                                             |
+| `NEXT_PUBLIC_SITE_EDITOR`    | Fastfetch editor value.                                            | `vscode, neovim`                                  |
+| `NEXT_PUBLIC_SITE_LANGUAGES` | Comma-separated languages for fastfetch.                           | `TypeScript,Rust,Python`                          |
+| `NEXT_PUBLIC_SITE_STACK`     | Comma-separated stack for fastfetch.                               | `Next.js,React,Node.js,Nest.js,PostgreSQL,Docker` |
+| `NEXT_PUBLIC_CODING_SINCE`   | ISO date you started coding (drives the fastfetch "uptime").       | `2015-01-01`                                      |
 
 ### Legal / imprint config (server-only)
 
@@ -84,27 +84,27 @@ Read server-side only and rendered into the `/imprint` and `/privacy` pages (bot
 real name and address never get committed or shipped to clients. Until `IMPRINT_NAME` is set,
 placeholder values are shown.
 
-| Variable | Description |
-|----------|-------------|
-| `IMPRINT_NAME` | Your legal name. Setting this marks the imprint as "configured". |
-| `IMPRINT_STREET` | Street address. |
-| `IMPRINT_CITY` | Postal code + city. |
-| `IMPRINT_COUNTRY` | Country. |
-| `IMPRINT_EMAIL` | Contact email (falls back to `NEXT_PUBLIC_SITE_EMAIL`). |
-| `IMPRINT_PHONE` | Phone number (optional). |
-| `IMPRINT_VAT_ID` | VAT ID (optional). |
+| Variable          | Description                                                      |
+| ----------------- | ---------------------------------------------------------------- |
+| `IMPRINT_NAME`    | Your legal name. Setting this marks the imprint as "configured". |
+| `IMPRINT_STREET`  | Street address.                                                  |
+| `IMPRINT_CITY`    | Postal code + city.                                              |
+| `IMPRINT_COUNTRY` | Country.                                                         |
+| `IMPRINT_EMAIL`   | Contact email (falls back to `NEXT_PUBLIC_SITE_EMAIL`).          |
+| `IMPRINT_PHONE`   | Phone number (optional).                                         |
+| `IMPRINT_VAT_ID`  | VAT ID (optional).                                               |
 
 ### Auth & message board (optional)
 
 The GitHub-authenticated message board only activates when these are set. Leave them empty to run the
 site without the board.
 
-| Variable | Description |
-|----------|-------------|
-| `AUTH_SECRET` | Secret used to sign the HMAC-SHA256 session cookie. Use a long random string. |
-| `GITHUB_CLIENT_ID` | OAuth app client ID ([create one here](https://github.com/settings/developers)). |
-| `GITHUB_CLIENT_SECRET` | OAuth app client secret. |
-| `DATABASE_URL` | Neon Postgres connection string for board + visit storage in production. Auto-injected by Vercel once a Neon database is connected (`POSTGRES_URL` is also accepted); unset, the board uses a local JSON file under `.data/`. |
+| Variable               | Description                                                                                                                                                                                                                   |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AUTH_SECRET`          | Secret used to sign the HMAC-SHA256 session cookie. Use a long random string.                                                                                                                                                 |
+| `GITHUB_CLIENT_ID`     | OAuth app client ID ([create one here](https://github.com/settings/developers)).                                                                                                                                              |
+| `GITHUB_CLIENT_SECRET` | OAuth app client secret.                                                                                                                                                                                                      |
+| `DATABASE_URL`         | Neon Postgres connection string for board + visit storage in production. Auto-injected by Vercel once a Neon database is connected (`POSTGRES_URL` is also accepted); unset, the board uses a local JSON file under `.data/`. |
 
 For the GitHub OAuth app, set the **Authorization callback URL** to
 `<NEXT_PUBLIC_SITE_URL>/api/auth/callback`.
@@ -120,7 +120,7 @@ A bit more detail on what's under the hood:
   palette, hotkeys, and sitemap all derive from it.
 - **Server-first.** Pages are React Server Components that read locale dictionaries directly.
   Interactive pieces (the shell, board, palette, effects) are client components with a low boundary.
-- **Dual navigation.** Click tabs *or* drive everything from the keyboard: `⌘/Ctrl+K` opens the
+- **Dual navigation.** Click tabs _or_ drive everything from the keyboard: `⌘/Ctrl+K` opens the
   command palette, `Ctrl+]`/`[` switch tabs, `g`+number jumps, `⌘/Ctrl+J` toggles the theme,
   `Ctrl+.` cycles the color scheme, `?` shows help, and `L` swaps the language. (Browser-reserved
   combos are deliberately avoided.)
@@ -143,18 +143,18 @@ A bit more detail on what's under the hood:
 
 ### Tech stack
 
-| Concern | Choice |
-|---------|--------|
-| Framework | Next.js 16 (App Router / RSC, Turbopack) |
-| UI | React 19 |
-| Language | TypeScript (strict) |
-| Styling | Tailwind CSS v4 (CSS-first `@theme`, no config file) |
-| State | Zustand |
-| Animation | Framer Motion (`motion`) + CSS + canvas |
-| i18n | Custom, route-based |
-| Auth | Hand-rolled GitHub OAuth (Web Crypto signed cookie) |
-| Storage | JSON file (dev) / Neon Postgres (prod) |
-| Tests | Vitest + React Testing Library (jsdom) |
+| Concern   | Choice                                               |
+| --------- | ---------------------------------------------------- |
+| Framework | Next.js 16 (App Router / RSC, Turbopack)             |
+| UI        | React 19                                             |
+| Language  | TypeScript (strict)                                  |
+| Styling   | Tailwind CSS v4 (CSS-first `@theme`, no config file) |
+| State     | Zustand                                              |
+| Animation | Framer Motion (`motion`) + CSS + canvas              |
+| i18n      | Custom, route-based                                  |
+| Auth      | Hand-rolled GitHub OAuth (Web Crypto signed cookie)  |
+| Storage   | JSON file (dev) / Neon Postgres (prod)               |
+| Tests     | Vitest + React Testing Library (jsdom)               |
 
 ### Project layout
 

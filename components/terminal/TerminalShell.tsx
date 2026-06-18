@@ -49,7 +49,8 @@ export function TerminalShell({
   }, [pathname, hydrated, theme, scheme]);
 
   const segment =
-    allNav.find((n) => pathname === localePath(locale, n.segment))?.segment ?? "";
+    allNav.find((n) => pathname === localePath(locale, n.segment))?.segment ??
+    "";
   const path = segment ? `~/${segment}` : "~";
 
   return (

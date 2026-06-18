@@ -39,8 +39,7 @@ export function About({ locale }: { locale: Locale }) {
       <header {...reveal("mb-8")}>
         <h1 className="glitch text-accent">{t("about.heading")}</h1>
         <p className="text-muted">
-          ${" "}
-          <Typewriter text={t("about.command")} />
+          $ <Typewriter text={t("about.command")} />
         </p>
       </header>
 

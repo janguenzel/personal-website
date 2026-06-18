@@ -10,7 +10,10 @@ import { TerminalShell } from "@/components/terminal/TerminalShell";
 import { InlineScript } from "@/components/ui/InlineScript";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 // Runs before paint: apply persisted theme/scheme so there's no flash.
 const NO_FOUC = `(function(){try{var d=document.documentElement;var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';d.setAttribute('data-theme',t);var s=localStorage.getItem('scheme')||'green';d.setAttribute('data-scheme',s);}catch(e){}})();`;

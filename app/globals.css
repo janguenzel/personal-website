@@ -12,7 +12,8 @@
   --color-accent-2: var(--accent-2);
   --color-prompt: var(--prompt);
   --color-danger: var(--danger);
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 

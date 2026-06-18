@@ -28,7 +28,9 @@ export function getAuthorizeUrl(state: string): string {
   return `https://github.com/login/oauth/authorize?${params.toString()}`;
 }
 
-export async function exchangeCodeForToken(code: string): Promise<string | null> {
+export async function exchangeCodeForToken(
+  code: string,
+): Promise<string | null> {
   const res = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -45,7 +47,9 @@ export async function exchangeCodeForToken(code: string): Promise<string | null>
   return data.access_token ?? null;
 }
 
-export async function fetchGitHubUser(token: string): Promise<SessionUser | null> {
+export async function fetchGitHubUser(
+  token: string,
+): Promise<SessionUser | null> {
   const res = await fetch("https://api.github.com/user", {
     headers: {
       Authorization: `Bearer ${token}`,

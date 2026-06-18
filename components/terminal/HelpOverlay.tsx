@@ -39,7 +39,10 @@ export function HelpOverlay() {
         <h2 className="mb-4 text-sm text-accent">{t("help.title")}</h2>
         <dl className="space-y-2 text-sm">
           {ROWS.map((row) => (
-            <div key={row.key} className="flex items-center justify-between gap-4">
+            <div
+              key={row.key}
+              className="flex items-center justify-between gap-4"
+            >
               <dt className="text-muted">{t(`help.${row.key}`)}</dt>
               <dd className="flex gap-1">
                 {row.keys.map((k) => (

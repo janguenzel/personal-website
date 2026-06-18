@@ -54,12 +54,18 @@ describe("exchangeCodeForToken", () => {
   });
 
   it("returns null when GitHub responds with an error status", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({}, false)));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse({}, false)),
+    );
     await expect(exchangeCodeForToken("code")).resolves.toBeNull();
   });
 
   it("returns null when the response omits an access token", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ error: "bad" })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse({ error: "bad" })),
+    );
     await expect(exchangeCodeForToken("code")).resolves.toBeNull();
   });
 });
@@ -86,7 +92,10 @@ describe("fetchGitHubUser", () => {
   });
 
   it("returns null when the user request fails", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({}, false)));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jsonResponse({}, false)),
+    );
     await expect(fetchGitHubUser("token")).resolves.toBeNull();
   });
 });

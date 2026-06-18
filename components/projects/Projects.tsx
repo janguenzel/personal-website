@@ -36,8 +36,7 @@ export function Projects({
       <header {...reveal("mb-6")}>
         <h1 className="text-accent">{t("projects.heading")}</h1>
         <p className="text-muted">
-          ${" "}
-          <Typewriter text={t("projects.command")} />
+          $ <Typewriter text={t("projects.command")} />
         </p>
       </header>
 

@@ -169,7 +169,8 @@ export const useUiStore = create<UiState>((set, get) => ({
   },
 
   openPalette: () => set({ overlay: "palette" }),
-  togglePalette: () => set({ overlay: get().overlay === "palette" ? null : "palette" }),
+  togglePalette: () =>
+    set({ overlay: get().overlay === "palette" ? null : "palette" }),
   openHelp: () => set({ overlay: "help" }),
   closeOverlays: () => set({ overlay: null }),
 

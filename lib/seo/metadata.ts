@@ -40,9 +40,7 @@ export function buildMetadata({
   return {
     title: { absolute: fullTitle },
     description,
-    ...(noindex
-      ? { robots: { index: false, follow: true } }
-      : {}),
+    ...(noindex ? { robots: { index: false, follow: true } } : {}),
     alternates: { canonical: url, languages },
     openGraph: {
       type: "website",

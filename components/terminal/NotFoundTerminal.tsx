@@ -88,7 +88,8 @@ export function NotFoundTerminal({
           {promptLabel}
         </span>
         <span className="text-muted" aria-hidden>
-          {" "}${" "}
+          {" "}
+          ${" "}
         </span>
         <span className="text-fg">curl -X GET {url}</span>
       </p>

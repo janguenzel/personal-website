@@ -10,9 +10,7 @@ import { useI18n } from "@/lib/i18n/provider";
 // prefers-reduced-motion rule in globals.css. The visual blocks are aria-hidden;
 // a polite status line announces the load to assistive tech.
 function Bar({ className = "" }: { className?: string }) {
-  return (
-    <div className={`animate-pulse rounded bg-surface-2 ${className}`} />
-  );
+  return <div className={`animate-pulse rounded bg-surface-2 ${className}`} />;
 }
 
 export default function BoardLoading() {

@@ -193,7 +193,9 @@ async function readQuery<T>(
 }
 
 function toIso(value: unknown): string {
-  return value instanceof Date ? value.toISOString() : new Date(String(value)).toISOString();
+  return value instanceof Date
+    ? value.toISOString()
+    : new Date(String(value)).toISOString();
 }
 
 // int8 (bigint) and timestamptz come back as strings / Date objects from the pg
@@ -323,7 +325,9 @@ function computeStats(messages: BoardMessage[]): BoardStats {
 
 // ── Public API ───────────────────────────────────────────────────────────────
 
-export async function listMessages(limit = MAX_MESSAGES): Promise<BoardMessage[]> {
+export async function listMessages(
+  limit = MAX_MESSAGES,
+): Promise<BoardMessage[]> {
   return backend().list(limit);
 }
 
@@ -352,7 +356,10 @@ export async function listMessagesPage(
 export async function listFirstPageWithStats(
   limit = BOARD_PAGE_SIZE,
 ): Promise<{ messages: BoardMessage[]; stats: BoardStats; hasMore: boolean }> {
-  const [page, stats] = await Promise.all([listMessagesPage(limit), getStats()]);
+  const [page, stats] = await Promise.all([
+    listMessagesPage(limit),
+    getStats(),
+  ]);
   return { messages: page.messages, stats, hasMore: page.hasMore };
 }
 

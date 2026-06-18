@@ -29,7 +29,10 @@ export function getImprint(): ImprintData {
     street: env("IMPRINT_STREET", "Example Street 1"),
     city: env("IMPRINT_CITY", "12345 Example City"),
     country: env("IMPRINT_COUNTRY", "Germany"),
-    email: env("IMPRINT_EMAIL", env("NEXT_PUBLIC_SITE_EMAIL", "mail@example.com")),
+    email: env(
+      "IMPRINT_EMAIL",
+      env("NEXT_PUBLIC_SITE_EMAIL", "mail@example.com"),
+    ),
     phone: env("IMPRINT_PHONE"),
     vatId: env("IMPRINT_VAT_ID"),
     configured: Boolean(name),

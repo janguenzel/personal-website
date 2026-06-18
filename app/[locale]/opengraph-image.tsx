@@ -34,76 +34,95 @@ export default async function OpengraphImage({
   });
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        background: c.bg,
+        padding: 56,
+        fontFamily: "monospace",
+      }}
+    >
       <div
         style={{
-          width: "100%",
-          height: "100%",
           display: "flex",
-          background: c.bg,
-          padding: 56,
-          fontFamily: "monospace",
+          flexDirection: "column",
+          flex: 1,
+          border: `2px solid ${c.border}`,
+          borderRadius: 18,
+          background: c.surface,
         }}
       >
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            flex: 1,
-            border: `2px solid ${c.border}`,
-            borderRadius: 18,
-            background: c.surface,
+            alignItems: "center",
+            gap: 12,
+            padding: "20px 26px",
+            borderBottom: `2px solid ${c.border}`,
           }}
         >
+          <div style={dot("#ff5f56")} />
+          <div style={dot("#ffbd2e")} />
+          <div style={dot("#27c93f")} />
           <div
             style={{
               display: "flex",
-              alignItems: "center",
-              gap: 12,
-              padding: "20px 26px",
-              borderBottom: `2px solid ${c.border}`,
+              marginLeft: 18,
+              color: c.muted,
+              fontSize: 24,
             }}
           >
-            <div style={dot("#ff5f56")} />
-            <div style={dot("#ffbd2e")} />
-            <div style={dot("#27c93f")} />
-            <div style={{ display: "flex", marginLeft: 18, color: c.muted, fontSize: 24 }}>
-              {site.user}@{site.host}: ~
-            </div>
+            {site.user}@{site.host}: ~
+          </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            justifyContent: "center",
+            padding: "44px 56px",
+          }}
+        >
+          <div style={{ display: "flex", color: c.accent, fontSize: 30 }}>
+            ❯ whoami
           </div>
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              flex: 1,
-              justifyContent: "center",
-              padding: "44px 56px",
+              color: c.fg,
+              fontSize: 74,
+              fontWeight: 700,
+              marginTop: 14,
             }}
           >
-            <div style={{ display: "flex", color: c.accent, fontSize: 30 }}>
-              ❯ whoami
-            </div>
-            <div
-              style={{
-                display: "flex",
-                color: c.fg,
-                fontSize: 74,
-                fontWeight: 700,
-                marginTop: 14,
-              }}
-            >
-              {site.name}
-            </div>
-            <div style={{ display: "flex", color: c.muted, fontSize: 34, marginTop: 8 }}>
-              {site.role} · {site.location}
-            </div>
-            <div style={{ display: "flex", color: c.accent, fontSize: 26, marginTop: 40 }}>
-              {dict.meta.home.title} — {new URL(site.url).host}
-            </div>
+            {site.name}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              color: c.muted,
+              fontSize: 34,
+              marginTop: 8,
+            }}
+          >
+            {site.role} · {site.location}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              color: c.accent,
+              fontSize: 26,
+              marginTop: 40,
+            }}
+          >
+            {dict.meta.home.title} — {new URL(site.url).host}
           </div>
         </div>
       </div>
-    ),
+    </div>,
     { ...size },
   );
 }

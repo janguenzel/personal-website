@@ -36,7 +36,9 @@ describe("Typewriter", () => {
       vi.runAllTimers();
     });
     // The animated (aria-hidden) copy already shows the full string.
-    expect(screen.getByText("Instant", { selector: "[aria-hidden]" })).toBeInTheDocument();
+    expect(
+      screen.getByText("Instant", { selector: "[aria-hidden]" }),
+    ).toBeInTheDocument();
     expect(onDone).toHaveBeenCalledTimes(1);
   });
 

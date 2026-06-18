@@ -142,7 +142,9 @@ export function CommandPalette({ locale }: { locale: Locale }) {
           role="listbox"
         >
           {filtered.length === 0 ? (
-            <li className="px-3 py-2 text-sm text-muted">{t("palette.empty")}</li>
+            <li className="px-3 py-2 text-sm text-muted">
+              {t("palette.empty")}
+            </li>
           ) : (
             filtered.map((item, i) => (
               <li

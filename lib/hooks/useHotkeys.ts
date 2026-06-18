@@ -77,7 +77,11 @@ export function useHotkeys(locale: Locale): void {
 
       // Konami easter egg.
       konami = [...konami, key].slice(-KONAMI.length);
-      if (KONAMI.every((k, i) => k.toLowerCase() === (konami[i] ?? "").toLowerCase())) {
+      if (
+        KONAMI.every(
+          (k, i) => k.toLowerCase() === (konami[i] ?? "").toLowerCase(),
+        )
+      ) {
         store.toggleMatrix();
         konami = [];
         return;

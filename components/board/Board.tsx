@@ -248,9 +248,7 @@ export function Board({
         return;
       }
       const data = (await res.json()) as { message: BoardMessage };
-      setMessages((prev) =>
-        prev.map((m) => (m.id === id ? data.message : m)),
-      );
+      setMessages((prev) => prev.map((m) => (m.id === id ? data.message : m)));
       setEditingId(null);
       setEditText("");
     } catch {
@@ -523,17 +521,10 @@ export function Board({
           a small status echoes progress, and a final marker once we hit the
           oldest message. */}
       {hasMore ? (
-        <div
-          ref={sentinelRef}
-          aria-hidden
-          className="h-px w-full"
-        />
+        <div ref={sentinelRef} aria-hidden className="h-px w-full" />
       ) : null}
       {loadingMore ? (
-        <p
-          role="status"
-          className="py-4 text-center text-xs text-muted"
-        >
+        <p role="status" className="py-4 text-center text-xs text-muted">
           <span className="text-accent" aria-hidden>
             ${" "}
           </span>

@@ -9,7 +9,9 @@ import { defaultLocale, locales } from "@/lib/i18n/config";
 const LOCALE_COOKIE = "locale";
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
-function isLocale(value: string | undefined): value is (typeof locales)[number] {
+function isLocale(
+  value: string | undefined,
+): value is (typeof locales)[number] {
   return !!value && (locales as readonly string[]).includes(value);
 }
 
