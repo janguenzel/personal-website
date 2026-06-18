@@ -154,6 +154,7 @@
     "edited": "bearbeitet",
     "you": "du",
     "confirmDelete": "Diese Nachricht löschen?",
+    "confirmDeleteHint": "Das lässt sich nicht rückgängig machen — die Nachricht ist endgültig weg.",
     "cooldown": "Du kannst in {time} wieder posten.",
     "empty": "Noch keine Nachrichten. Sei der/die Erste.",
     "charCount": "{count}/{max}",

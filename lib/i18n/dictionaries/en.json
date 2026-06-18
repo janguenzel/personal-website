@@ -154,6 +154,7 @@
     "edited": "edited",
     "you": "you",
     "confirmDelete": "Delete this message?",
+    "confirmDeleteHint": "This can't be undone — the message is gone for good.",
     "cooldown": "You can post again in {time}.",
     "empty": "No messages yet. Be the first to sign the board.",
     "charCount": "{count}/{max}",

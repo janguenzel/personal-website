@@ -12,6 +12,7 @@ import {
 } from "@/lib/board/types";
 import type { SessionUser } from "@/lib/auth/session";
 import type { Locale } from "@/lib/i18n/config";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 function formatDuration(ms: number): string {
   const total = Math.max(0, Math.ceil(ms / 1000));
@@ -57,6 +58,9 @@ export function Board({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // Pending delete: id of the message awaiting confirmation (drives the modal).
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const remaining = nextAllowedAt ? nextAllowedAt - now : 0;
   const onCooldown = remaining > 0;
@@ -190,7 +194,6 @@ export function Board({
   }
 
   async function remove(id: string) {
-    if (!window.confirm(t("board.confirmDelete"))) return;
     setError(null);
     try {
       const res = await fetch(`/api/board/${id}`, { method: "DELETE" });
@@ -208,6 +211,12 @@ export function Board({
     } catch {
       setError(t("board.errors.failed"));
     }
+  }
+
+  function confirmDelete() {
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
+    if (id) void remove(id);
   }
 
   async function logout() {
@@ -404,7 +413,7 @@ export function Board({
                           </button>
                           <button
                             type="button"
-                            onClick={() => remove(m.id)}
+                            onClick={() => setPendingDeleteId(m.id)}
                             className="text-muted hover:text-danger"
                           >
                             {t("board.delete")}
@@ -419,6 +428,17 @@ export function Board({
           })}
         </ul>
       )}
+
+      <ConfirmDialog
+        open={pendingDeleteId !== null}
+        title={t("board.confirmDelete")}
+        message={t("board.confirmDeleteHint")}
+        confirmLabel={t("board.delete")}
+        cancelLabel={t("board.cancel")}
+        destructive
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDeleteId(null)}
+      />
     </section>
   );
 }
