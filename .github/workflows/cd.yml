@@ -1,0 +1,66 @@
+name: CD
+
+# Runs only after the CI workflow finishes on `main`. We deploy a Vercel
+# *preview* (no --prod) so a human can verify it and then promote that exact
+# build to production by hand in the Vercel dashboard.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+# One preview deploy per ref at a time; newer pushes supersede older ones.
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    name: Deploy Vercel Preview
+    runs-on: ubuntu-latest
+    # Only deploy when the CI run we're reacting to actually succeeded.
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Checkout the commit CI validated
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel preview environment
+        run: vercel pull --yes --environment=preview --token="${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Build (preview)
+        run: vercel build --token="${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Deploy prebuilt output to a preview URL
+        id: deploy
+        run: |
+          url="$(vercel deploy --prebuilt --token="${{ secrets.VERCEL_TOKEN }}")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Preview deployed: $url"
+
+      - name: Job summary
+        run: |
+          {
+            echo "### ✅ Vercel preview deployed"
+            echo ""
+            echo "- Commit: \`${{ github.event.workflow_run.head_sha }}\`"
+            echo "- Preview: ${{ steps.deploy.outputs.url }}"
+            echo ""
+            echo "Verify the preview, then **Promote to Production** in the Vercel dashboard."
+          } >> "$GITHUB_STEP_SUMMARY"
