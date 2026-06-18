@@ -23,6 +23,16 @@ import {
 
 interface Backend {
   list(limit: number): Promise<BoardMessage[]>;
+  /**
+   * Messages + stats in a single backend round-trip. The board page and the
+   * board GET endpoint need both; fetching them together avoids a second file
+   * read / Neon query. Stats are exact because inserts cap the table at
+   * MAX_MESSAGES, so `limit = MAX_MESSAGES` always returns the full set.
+   */
+  listWithStats(limit: number): Promise<{
+    messages: BoardMessage[];
+    stats: BoardStats;
+  }>;
   insert(message: BoardMessage): Promise<void>;
   update(
     id: string,
@@ -69,6 +79,10 @@ const fileBackend: Backend = {
   async list(limit) {
     return (await readAll()).slice(0, limit);
   },
+  async listWithStats(limit) {
+    const all = await readAll();
+    return { messages: all.slice(0, limit), stats: computeStats(all) };
+  },
   async insert(message) {
     const messages = await readAll();
     await writeAll([message, ...messages].slice(0, MAX_MESSAGES));
@@ -112,12 +126,20 @@ const DATABASE_URL = (
 let sqlClient: NeonQueryFunction<false, false> | null = null;
 let schemaReady: Promise<void> | null = null;
 
-async function getSql(): Promise<NeonQueryFunction<false, false>> {
+async function getClient(): Promise<NeonQueryFunction<false, false>> {
   if (!sqlClient) {
     const { neon } = await import("@neondatabase/serverless");
     sqlClient = neon(DATABASE_URL!);
   }
-  const sql = sqlClient;
+  return sqlClient;
+}
+
+// Schema setup is only awaited on writes — reads stay off this path so a cold
+// board load isn't blocked behind two serialized DDL round-trips. The table is
+// created on the first write; reads before then simply degrade to empty (see
+// `readQuery`). Memoised, so it runs at most once per process.
+async function getSqlForWrite(): Promise<NeonQueryFunction<false, false>> {
+  const sql = await getClient();
   schemaReady ??= (async () => {
     await sql`
       CREATE TABLE IF NOT EXISTS board_messages (
@@ -138,6 +160,21 @@ async function getSql(): Promise<NeonQueryFunction<false, false>> {
   })();
   await schemaReady;
   return sql;
+}
+
+// Run a read query, degrading to `fallback` on any error (e.g. the table not
+// existing yet on a brand-new database). Mirrors the file backend's `readAll`,
+// which already swallows read errors and returns an empty board.
+async function readQuery<T>(
+  run: (sql: NeonQueryFunction<false, false>) => Promise<T>,
+  fallback: T,
+): Promise<T> {
+  try {
+    return await run(await getClient());
+  } catch (err) {
+    console.warn("[board] read query failed, treating board as empty:", err);
+    return fallback;
+  }
 }
 
 function toIso(value: unknown): string {
@@ -161,14 +198,30 @@ function rowToMessage(r: Record<string, unknown>): BoardMessage {
 
 const neonBackend: Backend = {
   async list(limit) {
-    const sql = await getSql();
-    const rows = await sql`
-      SELECT * FROM board_messages ORDER BY created_at DESC LIMIT ${limit}
-    `;
-    return rows.map(rowToMessage);
+    return readQuery(async (sql) => {
+      const rows = await sql`
+        SELECT * FROM board_messages ORDER BY created_at DESC LIMIT ${limit}
+      `;
+      return rows.map(rowToMessage);
+    }, []);
+  },
+  async listWithStats(limit) {
+    // One round-trip: fetch the rows and derive stats from them. With
+    // `limit = MAX_MESSAGES` the rows are the whole table (inserts trim to
+    // MAX_MESSAGES), so the JS-side counts equal a COUNT(*) in the database.
+    return readQuery(
+      async (sql) => {
+        const rows = await sql`
+          SELECT * FROM board_messages ORDER BY created_at DESC LIMIT ${limit}
+        `;
+        const messages = rows.map(rowToMessage);
+        return { messages, stats: computeStats(messages) };
+      },
+      { messages: [], stats: { total: 0, uniqueUsers: 0 } },
+    );
   },
   async insert(message) {
-    const sql = await getSql();
+    const sql = await getSqlForWrite();
     await sql`
       INSERT INTO board_messages
         (id, user_id, login, name, avatar, text, created_at)
@@ -184,7 +237,7 @@ const neonBackend: Backend = {
     `;
   },
   async update(id, userId, text, editedAt) {
-    const sql = await getSql();
+    const sql = await getSqlForWrite();
     const rows = await sql`
       UPDATE board_messages
          SET text = ${text}, edited_at = ${editedAt}
@@ -194,7 +247,7 @@ const neonBackend: Backend = {
     return rows.length ? rowToMessage(rows[0]) : null;
   },
   async remove(id, userId) {
-    const sql = await getSql();
+    const sql = await getSqlForWrite();
     const rows = await sql`
       DELETE FROM board_messages
        WHERE id = ${id} AND user_id = ${userId}
@@ -203,22 +256,27 @@ const neonBackend: Backend = {
     return rows.length > 0;
   },
   async lastPostAt(userId) {
-    const sql = await getSql();
-    const rows = await sql`
-      SELECT created_at FROM board_messages
-       WHERE user_id = ${userId}
-       ORDER BY created_at DESC LIMIT 1
-    `;
-    return rows.length ? toIso(rows[0].created_at) : null;
+    return readQuery(async (sql) => {
+      const rows = await sql`
+        SELECT created_at FROM board_messages
+         WHERE user_id = ${userId}
+         ORDER BY created_at DESC LIMIT 1
+      `;
+      return rows.length ? toIso(rows[0].created_at) : null;
+    }, null);
   },
   async stats() {
-    const sql = await getSql();
-    const rows = await sql`
-      SELECT count(*)::int AS total,
-             count(DISTINCT user_id)::int AS unique_users
-        FROM board_messages
-    `;
-    return { total: rows[0].total, uniqueUsers: rows[0].unique_users };
+    return readQuery(
+      async (sql) => {
+        const rows = await sql`
+          SELECT count(*)::int AS total,
+                 count(DISTINCT user_id)::int AS unique_users
+            FROM board_messages
+        `;
+        return { total: rows[0].total, uniqueUsers: rows[0].unique_users };
+      },
+      { total: 0, uniqueUsers: 0 },
+    );
   },
 };
 
@@ -237,6 +295,13 @@ function computeStats(messages: BoardMessage[]): BoardStats {
 
 export async function listMessages(limit = MAX_MESSAGES): Promise<BoardMessage[]> {
   return backend().list(limit);
+}
+
+/** Messages + stats in a single backend round-trip (board page / board GET). */
+export async function listMessagesWithStats(
+  limit = MAX_MESSAGES,
+): Promise<{ messages: BoardMessage[]; stats: BoardStats }> {
+  return backend().listWithStats(limit);
 }
 
 export async function addMessage(input: NewMessage): Promise<BoardMessage> {

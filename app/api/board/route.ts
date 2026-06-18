@@ -1,10 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getSession } from "@/lib/auth/session";
-import { addMessage, getStats, lastPostAt, listMessages } from "@/lib/board/store";
+import {
+  addMessage,
+  getStats,
+  lastPostAt,
+  listMessagesWithStats,
+} from "@/lib/board/store";
 import { MAX_MESSAGE_LENGTH, POST_COOLDOWN_MS } from "@/lib/board/types";
 
 export async function GET() {
-  const [messages, stats] = await Promise.all([listMessages(), getStats()]);
+  const { messages, stats } = await listMessagesWithStats();
   return NextResponse.json({ messages, stats });
 }
 

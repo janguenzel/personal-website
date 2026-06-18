@@ -5,7 +5,7 @@ import { hasLocale } from "@/lib/i18n/config";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { getSession } from "@/lib/auth/session";
 import { isGitHubAuthConfigured } from "@/lib/auth/github";
-import { getStats, listMessages } from "@/lib/board/store";
+import { listMessagesWithStats } from "@/lib/board/store";
 import { Board } from "@/components/board/Board";
 
 // Live data + per-request session → always dynamic.
@@ -37,11 +37,10 @@ export default async function BoardPage({
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
 
-  const [{ auth }, user, messages, stats] = await Promise.all([
+  const [{ auth }, user, { messages, stats }] = await Promise.all([
     searchParams,
     getSession(),
-    listMessages(),
-    getStats(),
+    listMessagesWithStats(),
   ]);
 
   return (

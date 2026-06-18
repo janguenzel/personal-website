@@ -67,6 +67,18 @@ describe("board store (file backend)", () => {
     expect(await store.getStats()).toEqual({ total: 3, uniqueUsers: 2 });
   });
 
+  it("returns messages and stats together in one call", async () => {
+    expect(await store.listMessagesWithStats()).toEqual({
+      messages: [],
+      stats: { total: 0, uniqueUsers: 0 },
+    });
+    await store.addMessage({ ...base, userId: 1, text: "first" });
+    await store.addMessage({ ...base, userId: 2, text: "second" });
+    const { messages, stats } = await store.listMessagesWithStats();
+    expect(messages.map((m) => m.text)).toEqual(["second", "first"]);
+    expect(stats).toEqual({ total: 2, uniqueUsers: 2 });
+  });
+
   it("respects the limit argument", async () => {
     await store.addMessage({ ...base, text: "a" });
     await store.addMessage({ ...base, text: "b" });
