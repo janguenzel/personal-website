@@ -136,6 +136,8 @@
   },
   "board": {
     "heading": "~/board",
+    "command": "tail -f ~/board.log",
+    "loading": "Loading the board…",
     "subtitle": "A little guestbook. Sign in with GitHub and say hi.",
     "messagesCount": "{count} messages",
     "usersCount": "{count} contributors",

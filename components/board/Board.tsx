@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/provider";
+import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
+import { Typewriter } from "@/components/ui/Typewriter";
 import {
   MAX_MESSAGE_LENGTH,
   POST_COOLDOWN_MS,
@@ -37,6 +39,7 @@ export function Board({
   initialStats: BoardStats;
 }) {
   const { t } = useI18n();
+  const reduced = useReducedMotion();
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
   const [stats, setStats] = useState(initialStats);
@@ -224,10 +227,30 @@ export function Board({
     router.refresh();
   }
 
+  // Staggered top-to-bottom reveal matching /about and /projects. Gated on
+  // useReducedMotion: opted-out users get the final state with no delays. The
+  // counter increments in source order; message rows clamp their index so a long
+  // board never hides recent posts behind a multi-second delay.
+  let order = 0;
+  const reveal = (base = "", index?: number) => {
+    const i = index ?? order++;
+    if (reduced) return { className: base };
+    return {
+      className: `${base} reveal`.trim(),
+      style: { animationDelay: `${Math.min(i, 12) * 70}ms` },
+    };
+  };
+
   return (
     <section className="text-sm">
-      <header className="mb-4">
+      <header {...reveal("mb-4")}>
         <h1 className="text-accent">{t("board.heading")}</h1>
+        <p className="text-muted">
+          <span className="text-muted" aria-hidden>
+            ${" "}
+          </span>
+          <Typewriter text={t("board.command")} />
+        </p>
         <p className="text-muted">{t("board.subtitle")}</p>
         <p className="mt-2 flex flex-wrap gap-4 text-xs text-muted">
           <span>{t("board.messagesCount", { count: stats.total })}</span>
@@ -237,7 +260,7 @@ export function Board({
         </p>
       </header>
 
-      <div className="mb-6 rounded border border-border bg-surface p-3">
+      <div {...reveal("mb-6 rounded border border-border bg-surface p-3")}>
         {!authConfigured ? (
           <p className="text-muted">{t("board.authDisabled")}</p>
         ) : (
@@ -316,14 +339,17 @@ export function Board({
       </div>
 
       {messages.length === 0 ? (
-        <p className="text-muted">{t("board.empty")}</p>
+        <p {...reveal("text-muted")}>{t("board.empty")}</p>
       ) : (
         <ul className="space-y-3">
           {messages.map((m) => {
             const mine = user?.id === m.userId;
             const editing = editingId === m.id;
             return (
-              <li key={m.id} className="flex gap-3 border-b border-border pb-3">
+              <li
+                key={m.id}
+                {...reveal("flex gap-3 border-b border-border pb-3")}
+              >
                 <Image
                   src={m.avatar}
                   alt=""

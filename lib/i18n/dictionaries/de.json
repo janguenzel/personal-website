@@ -136,6 +136,8 @@
   },
   "board": {
     "heading": "~/board",
+    "command": "tail -f ~/board.log",
+    "loading": "Lade das Board…",
     "subtitle": "Ein kleines Gästebuch. Melde dich mit GitHub an und sag Hallo.",
     "messagesCount": "{count} Nachrichten",
     "usersCount": "{count} Beitragende",
