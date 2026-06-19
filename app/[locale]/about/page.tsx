@@ -3,7 +3,14 @@ import { notFound } from "next/navigation";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { buildMetadata } from "@/lib/seo/metadata";
+import {
+  breadcrumbSchema,
+  graph,
+  personSchema,
+  profilePageSchema,
+} from "@/lib/seo/jsonld";
 import { About } from "@/components/about/About";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export async function generateMetadata({
   params,
@@ -28,6 +35,18 @@ export default async function AboutPage({
 }) {
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
+  const dict = await getDictionary(locale);
 
-  return <About locale={locale} />;
+  return (
+    <>
+      <JsonLd
+        data={graph(
+          profilePageSchema(locale),
+          personSchema(),
+          breadcrumbSchema(locale, "about", dict.meta.about.title),
+        )}
+      />
+      <About locale={locale} />
+    </>
+  );
 }
