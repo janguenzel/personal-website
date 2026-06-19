@@ -35,7 +35,18 @@ export function MatrixRain() {
       "アイウエオカキクケコサシスセソ0123456789ABCDEFｱｲｳｴｵﾞﾟ".split("");
     let raf = 0;
 
-    const draw = () => {
+    // Advance one step every STEP_MS regardless of the display's actual refresh
+    // rate. We accumulate elapsed time and drain it in fixed steps, so the rain
+    // falls at a consistent perceived speed on 60/120/144Hz. ~45 steps/sec is a
+    // touch slower than a 60Hz frame loop, for a calmer fall.
+    const STEP_MS = 1000 / 45;
+    // Cap accrued time so a backgrounded tab / long stall can't spiral into a
+    // burst of catch-up steps when it resumes.
+    const MAX_ACCUM_MS = STEP_MS * 5;
+    let lastTime = 0;
+    let accumulator = 0;
+
+    const step = () => {
       ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       const accent =
@@ -52,9 +63,19 @@ export function MatrixRain() {
         }
         drops[i] += 1;
       }
+    };
+
+    const draw = (time: number) => {
+      if (lastTime === 0) lastTime = time;
+      accumulator = Math.min(accumulator + (time - lastTime), MAX_ACCUM_MS);
+      lastTime = time;
+      while (accumulator >= STEP_MS) {
+        step();
+        accumulator -= STEP_MS;
+      }
       raf = requestAnimationFrame(draw);
     };
-    draw();
+    raf = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(raf);
