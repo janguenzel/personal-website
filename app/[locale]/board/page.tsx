@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { breadcrumbSchema, graph, webPageSchema } from "@/lib/seo/jsonld";
 import { getSession } from "@/lib/auth/session";
 import { isGitHubAuthConfigured } from "@/lib/auth/github";
 import { listFirstPageWithStats } from "@/lib/board/store";
 import { Board } from "@/components/board/Board";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 // Live data + per-request session → always dynamic.
 export const dynamic = "force-dynamic";
@@ -37,21 +39,36 @@ export default async function BoardPage({
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
 
-  const [{ auth }, user, { messages, stats, hasMore }] = await Promise.all([
-    searchParams,
-    getSession(),
-    listFirstPageWithStats(),
-  ]);
+  const [{ auth }, user, { messages, stats, hasMore }, dict] =
+    await Promise.all([
+      searchParams,
+      getSession(),
+      listFirstPageWithStats(),
+      getDictionary(locale),
+    ]);
 
   return (
-    <Board
-      locale={locale}
-      user={user}
-      authConfigured={isGitHubAuthConfigured}
-      authError={auth === "error"}
-      initialMessages={messages}
-      initialStats={stats}
-      initialHasMore={hasMore}
-    />
+    <>
+      <JsonLd
+        data={graph(
+          webPageSchema(
+            locale,
+            "board",
+            dict.meta.board.title,
+            dict.meta.board.description,
+          ),
+          breadcrumbSchema(locale, "board", dict.meta.board.title),
+        )}
+      />
+      <Board
+        locale={locale}
+        user={user}
+        authConfigured={isGitHubAuthConfigured}
+        authError={auth === "error"}
+        initialMessages={messages}
+        initialStats={stats}
+        initialHasMore={hasMore}
+      />
+    </>
   );
 }

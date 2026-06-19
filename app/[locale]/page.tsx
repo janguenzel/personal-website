@@ -5,6 +5,7 @@ import { hasLocale } from "@/lib/i18n/config";
 import { createTranslator, type Messages } from "@/lib/i18n/translate";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { site, socials } from "@/lib/site";
+import { graph, personSchema, websiteSchema } from "@/lib/seo/jsonld";
 import { Fastfetch, type FastfetchRow } from "@/components/fastfetch/Fastfetch";
 import { JsonLd } from "@/components/seo/JsonLd";
 
@@ -59,20 +60,9 @@ export default async function HomePage({
     },
   ];
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: site.name,
-    jobTitle: site.role,
-    url: site.url,
-    email: site.email,
-    address: { "@type": "PostalAddress", addressCountry: site.location },
-    sameAs: [socials.github, socials.twitter, socials.linkedin].filter(Boolean),
-  };
-
   return (
     <>
-      <JsonLd data={jsonLd} />
+      <JsonLd data={graph(websiteSchema(locale), personSchema())} />
       <Fastfetch locale={locale} name={site.name} rows={rows} />
     </>
   );

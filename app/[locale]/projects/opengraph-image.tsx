@@ -14,5 +14,8 @@ export default async function OpengraphImage({
 }) {
   const { locale } = await params;
   const dict = await getDictionary(hasLocale(locale) ? locale : "en");
-  return renderOgCard({ command: "whoami", title: dict.meta.home.title });
+  return renderOgCard({
+    command: "ls ~/projects",
+    title: dict.meta.projects.title,
+  });
 }
